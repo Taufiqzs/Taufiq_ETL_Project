@@ -14,7 +14,7 @@ class Extract_data:
   
  
  
-    def __init__(self, data_url: str = None):
+    def __init__(self, data_url: str = None, ZONE_LOOKUP_URL: str=None):
         # environment variable DATA_URL (Docker)
         # URL default hardcode
 
@@ -22,7 +22,10 @@ class Extract_data:
             "DATA_URL",
             "https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2026-01.parquet"
         )
- 
+        self.ZONE_LOOKUP_URL = ZONE_LOOKUP_URL or os.getenv(
+            "ZONE_LOOKUP_URL",
+            "https://d37ci6vzurychx.cloudfront.net/misc/taxi_zone_lookup.csv"
+        )
         # membuat folder data/raw/ jika belum ada
         self.RAW_DIR.mkdir(parents=True, exist_ok=True)
  
@@ -79,6 +82,7 @@ class Extract_data:
  
     def extract_zone_lookup(self) -> Path:
         """Mengunduh file CSV zona taxi"""
+        filename = self.ZONE_LOOKUP_URL.split("/")[-1]
         return self.download(self.ZONE_LOOKUP_URL, "taxi_zone_lookup.csv")
  
  
@@ -109,5 +113,5 @@ class Extract_data:
  
 # ketika eksekusi: python3 scripts/extract.py Tidak akan berjalan jika extract.py diimpor oleh script lain
 if __name__ == "__main__":
-    extractor = Extractor()   # buat instance dari class Extractor
-    extractor.run()          
+    extractor = Extract_data()   # buat instance dari class Extract_data
+    extractor.run()
