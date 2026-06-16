@@ -7,10 +7,9 @@ from pathlib import Path
 
 class Extract_data:
 
-    #Folder  raw data files ke direktori data/raw_data_pl
-    FILE_RAW_TAXI = "yellow_tripdata_2026-01.parquet"
-    FILE_RAW_ZONE = "taxi_zone_lookup.csv"
-    RAW_DIR = Path("data/raw_data_pl")
+    #Folder  raw data files ke direktori data/raw_data_pl 
+    # perlu di kasi ./ dibelakang data agar data yang download masuk ke dalam folder taufiq_nyt_pipeline\data\raw_data_pl bukan buat baru
+    RAW_DIR = Path("./data/raw_data_pl")
   
  
  
@@ -55,7 +54,7 @@ class Extract_data:
         total = int(response.headers.get("content-length", 0))
         downloaded = 0
  
-        # untuk mengetahui jalannya download, download di bagi per 8 KiloByte 
+        # untuk mengetahui jalannya download, download di bagi per 8 KiloByte agar lebih mudah dan cepat download
         with open(dest, "wb") as f:
             for chunk in response.iter_content(chunk_size=8192):  # per 8KB
                 f.write(chunk)
@@ -83,7 +82,7 @@ class Extract_data:
     def extract_zone_lookup(self) -> Path:
         """Mengunduh file CSV zona taxi"""
         filename = self.ZONE_LOOKUP_URL.split("/")[-1]
-        return self.download(self.ZONE_LOOKUP_URL, "taxi_zone_lookup.csv")
+        return self.download(self.ZONE_LOOKUP_URL, filename)
  
  
     def run(self) -> dict:
@@ -92,9 +91,9 @@ class Extract_data:
         Dipanggil oleh run_pipeline.sh
         Mengembalikan path file yang diunduh untuk tahap berikutnya (transform)
         """
-        print("=" * 50)
+        print("=" * 10)
         print("TAHAP EKSTRAKSI")
-        print("=" * 50)
+        print("=" * 10)
  
         # Unduh kedua file
         taxi_path = self.extract_taxi_data()
