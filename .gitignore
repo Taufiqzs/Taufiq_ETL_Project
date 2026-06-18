@@ -1,0 +1,24 @@
+#ignore data, terlalu besar di git
+data/raw_data_pl/*
+data/transformed_data/*
+data/mart_data/*
+data/mart_clean/*
+
+#untuk struktur folder tanpa data
+!data/raw_data_pl/.gitkeep
+!data/transformed_data/.gitkeep
+!data/mart_data/.gitkeep
+!data/mart_clean/.gitkeep
+
+
+#logs
+logs/*.log
+
+
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+#env
+.env

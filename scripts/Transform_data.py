@@ -78,7 +78,7 @@ class Transform_data:
     def save_data(self) ->Path:
         res = self.transformed_dir / "taxi_transformed.parquet"
         self.df.to_parquet(res, index=False)
-        print(f"[SAVE] Hasil transformasi disimpan ke {res}")
+        print(f"[Save] Hasil transformasi disimpan ke {res}")
         return res
 
 
@@ -102,7 +102,7 @@ class Transform_data:
     # memastikan kolom datetime bertipe datetime, dan kolom fee bertipe float64. 
     def standarisasi_schema(self):
         #Melakukan rename kolom ke snake_case, pastikan tipe data benar
-        print("[TRANSFORM] Standarisasi skema...")
+        print("[Transform] Standarisasi skema...")
         explicit_rename = {
             "VendorID": "vendor_id",
             "RatecodeID": "ratecode_id",
@@ -130,7 +130,7 @@ class Transform_data:
     def transform_map_location(self):
         # Join PULocationID & DOLocationID ke nama zona/borough.
         # Dilakukan sekali (single process) karena merge pandas sudah cepat.
-        print("[TRANSFORM] Mapping lokasi...")
+        print("[Transform] Mapping lokasi...")
         zone = self.zone.rename(columns={
             "LocationID": "location_id", "Borough": "borough",
             "Zone": "zone", "service_zone": "service_zone",
@@ -147,12 +147,48 @@ class Transform_data:
    
     # ketika run code Method ini menjalankan Transform_data.py
     # menjalankan 5 sub-tahap berurutan: read_data → standardize_schema → transform_parallel → map_location → save.
+    def transform_parallel(self):
+        # Menjalankan transformasi tambahan pada self.df dengan membagi data menjadi beberapa chunk.
+        # Setiap chunk diproses oleh process_chunk(), yang membuat kolom turunan datetime
+        # dan melakukan mapping kategori seperti payment_type dan store_and_fwd_flag.
+        print("[Transform] Transformasi datetime dan mapping kategori")
+
+        # Membagi index baris berdasarkan jumlah CPU core.
+        # Setelah index terbagi, ambil baris dengan .iloc agar setiap chunk tetap berbentuk DataFrame.
+        row_indexes = np.array_split(np.arange(len(self.df)), self.n_process_cpu_cores)
+        chunks = [self.df.iloc[index].copy() for index in row_indexes if len(index) > 0]
+
+        # Gunakan multiprocessing hanya jika ada lebih dari satu core dan lebih dari satu chunk.
+        # Jika tidak, overhead multiprocessing bisa lebih besar daripada manfaatnya.
+        if self.n_process_cpu_cores > 1 and len(chunks) > 1:
+            # Pool membuat kumpulan worker process sebanyak jumlah CPU core.
+            # Context manager memastikan pool otomatis ditutup setelah proses selesai.
+            with Pool(self.n_process_cpu_cores) as pool:
+                # Terapkan process_chunk ke seluruh chunk secara paralel.
+                # Hasilnya adalah list DataFrame yang sudah ditransformasi.
+                processed_chunks = pool.map(process_chunk, chunks)
+        else:
+            # Fallback untuk single-core: chunk diproses satu per satu secara berurutan.
+            processed_chunks = [process_chunk(chunk) for chunk in chunks]
+
+        # Gabungkan kembali semua chunk hasil transformasi menjadi satu DataFrame utama.
+        # ignore_index=True membuat index baru agar tidak ada index duplikat antar chunk.
+        self.df = pd.concat(processed_chunks, ignore_index=True)
+
+
+
     def run(self) -> Path:
         print("TRANSFORMASI DATA")
         self.dataread()
+        #Karena process_chunk() butuh kolom datetime
         self.standarisasi_schema()
-       
+
+        #self.transform_parallel() dijalankan karena dia membuat kolom-kolom hasil transformasi dasar dari data trip
+        #Multiprocessing
+        self.transform_parallel()
+        #self.transform_map_location() tugasnya hanya menambahkan informasi lokasi dari taxi_zone_lookup.csv
         self.transform_map_location()
+
         res = self.save_data()
         print(f"\n[TRANSFORMASI]  telah selesai")
         print(f"  Baris akhir : {len(self.df):,}")
