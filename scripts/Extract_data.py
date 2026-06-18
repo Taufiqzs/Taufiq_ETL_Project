@@ -9,7 +9,8 @@ class Extract_data:
 
     #Folder  raw data files ke direktori data/raw_data_pl 
     # perlu di kasi ./ dibelakang data agar data yang download masuk ke dalam folder taufiq_nyt_pipeline\data\raw_data_pl bukan buat baru
-    RAW_DIR = Path("taufiq_nyt_pipeline/data/raw_data_pl")
+    BASE_DIR = Path(__file__).resolve().parents[1]
+    RAW_DIR = BASE_DIR / Path("./data/raw_data_pl")
   
  
  

@@ -57,11 +57,12 @@ def process_chunk(chunk: pd.DataFrame) -> pd.DataFrame:
 
 class Transform_data:
     #Lokasi direktori file raw data berada
-    raw_dir_path = Path("taufiq_nyt_pipeline/data/raw_data_pl")
+    BASE_DIR = Path(__file__).resolve().parents[1]
+    raw_dir_path = BASE_DIR / Path("./data/raw_data_pl")
     file_raw_trip = "yellow_tripdata_2026-01.parquet"
     file_raw_taxi = "taxi_zone_lookup.csv"
 
-    transformed_dir = Path("taufiq_nyt_pipeline/data/transformed_data")
+    transformed_dir = BASE_DIR / Path("./data/transformed_data")
 
     #Konstruktor class Transform. standar oop
     #Menyiapkan folder output data/transformed_data/ dan menentukan berapa banyak worker process yang akan dijalankan.
@@ -178,7 +179,9 @@ class Transform_data:
 
 
     def run(self) -> Path:
+        print("=" * 10)
         print("TRANSFORMASI DATA")
+        print("=" * 10)
         self.dataread()
         #Karena process_chunk() butuh kolom datetime
         self.standarisasi_schema()

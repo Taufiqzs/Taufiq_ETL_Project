@@ -3,9 +3,9 @@ from pathlib import Path
 
 
 class Validasi_Data_Quality:
-
-    Dir_Transformed_data = Path("taufiq_nyt_pipeline/data/transformed_data")
-    Dir_Mart_Cleaned = Path("taufiq_nyt_pipeline/data/mart_clean")
+    BASE_DIR = Path(__file__).resolve().parents[1]
+    Dir_Transformed_data = BASE_DIR / Path("./data/transformed_data")
+    Dir_Mart_Cleaned = BASE_DIR / Path("./data/mart_clean")
 
     Transformed_taxi_file = "taxi_transformed.parquet" #data yang sudah di transform
     Taxi_transformed_clean_file = "taxi_clean.csv" #data mart yang sudah bersih dan siap digunakan
@@ -24,11 +24,11 @@ class Validasi_Data_Quality:
 
     def save(self):
         clean_path = self.Dir_Mart_Cleaned / self.Taxi_transformed_clean_file
-        quarantine_path = self.Dir_Mart_Cleaned / self.Taxi_data_problem
+        karantina_data_path = self.Dir_Mart_Cleaned / self.Taxi_data_problem
         self.valid_df.to_csv(clean_path, index=False)
-        self.quarantine_df.to_csv(quarantine_path, index=False)
+        self.quarantine_df.to_csv(karantina_data_path, index=False)
         print(f"[SAVE] Data bersih   : {clean_path}")
-        print(f"[SAVE] Data karantina: {quarantine_path}")
+        print(f"[SAVE] Data karantina: {karantina_data_path}")
 
 # Method validasi: 
 # Untuk mengecek setiap baris terhadap tiga aturan kualitas 
@@ -88,8 +88,9 @@ class Validasi_Data_Quality:
         print(f"\n[REPORT] Disimpan ke {report_path}")
 
     def run(self):
-  
+        print("=" * 10)
         print("VALIDASI DATA QUALITY")
+        print("=" * 10)
         self.read_transformed_data()
         self.Validasi()
         self.save()
