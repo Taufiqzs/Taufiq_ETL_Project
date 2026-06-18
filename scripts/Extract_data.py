@@ -9,7 +9,7 @@ class Extract_data:
 
     #Folder  raw data files ke direktori data/raw_data_pl 
     # perlu di kasi ./ dibelakang data agar data yang download masuk ke dalam folder taufiq_nyt_pipeline\data\raw_data_pl bukan buat baru
-    RAW_DIR = Path("./data/raw_data_pl")
+    RAW_DIR = Path("taufiq_nyt_pipeline/data/raw_data_pl")
   
  
  
@@ -31,7 +31,8 @@ class Extract_data:
  
     def download(self, url: str, filename: str) -> Path:
         """Mengunduh satu file dari URL dan menyimpannya ke data/raw/"""
- 
+        # bisa menggunakan os.path.join("data/raw_data_pl", "yellow_tripdata_2026-01.parquet") tapi cara yang baru pakai Path()
+
         # Buat path tujuan lengkap, misal: data/raw/taxi_zone_lookup.csv
         dest = self.RAW_DIR / filename
  
@@ -92,7 +93,7 @@ class Extract_data:
         Mengembalikan path file yang diunduh untuk tahap berikutnya (transform)
         """
         print("=" * 10)
-        print("TAHAP EKSTRAKSI")
+        print("EKSTRAKSI")
         print("=" * 10)
  
         # Unduh kedua file

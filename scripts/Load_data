@@ -1,0 +1,27 @@
+import pandas as pd
+from pathlib import Path
+
+
+class Load_data:
+    
+    transformed_dir = Path("data/transformed_data")
+    mart_dir = Path("data/mart_data")
+
+    Transformed_file = "taxi_transformed.parquet"
+    Mart_file = "taxi_mart.csv"
+
+    def __init__(self):
+      
+
+    def read_transformed(self) :
+       
+
+    def save_csv(self) :
+       
+
+    def run(self):
+      
+
+
+if __name__ == "__main__":
+    Load_data().run()
