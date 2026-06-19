@@ -10,6 +10,7 @@ Extract -> Transform -> Load -> Data Quality Check
 
 # Struktur Folder Project
 
+```
 taufiq_nyt_pipeline/
 ├── data/
 │ ├── raw_data_pl/ # data mentah hasil download
@@ -22,12 +23,13 @@ taufiq_nyt_pipeline/
 │ ├── Extract_data.py # Tahap 1: download data
 │ ├── Transform_data.py # Tahap 2: transformasi
 │ ├── Load_data.py # Tahap 3: load ke CSV
-│ ├── Quality_check.py # Tahap 4: validasi kualitas
+│ ├── Validasi_Data_Quality.py # Tahap 4: validasi kualitas
 │ └── run_pipeline.sh # automation seluruh pipeline
 ├── Dockerfile
 ├── docker-compose.yaml
 ├── requirements.txt
 └── README.md
+```
 
 # Tahapan
 
@@ -43,9 +45,10 @@ URL diambil dari environment variable `DATA_URL` dan `ZONE_LOOKUP_URL`
 
 ## Input
 
-| File | Lokasi | Keterangan |
-| `taxi_zone_lookup.csv` | `taufiq_nyt_pipeline/data/raw_data_pl/` | raw data |
-| `yellow_tripdata_2026-01.parquet` | `taufiq_nyt_pipeline/data/raw_data_pl/` | raw data |
+| File                              | Lokasi                                  | Keterangan |
+| --------------------------------- | --------------------------------------- | ---------- |
+| `taxi_zone_lookup.csv`            | `taufiq_nyt_pipeline/data/raw_data_pl/` | raw data   |
+| `yellow_tripdata_2026-01.parquet` | `taufiq_nyt_pipeline/data/raw_data_pl/` | raw data   |
 
 # 2. Transform (`Transform_data.py`)
 
@@ -63,7 +66,7 @@ Mapping lokasi tetap single-process karena `merge` pandas sudah dioptimasi.
 
 Mengubah hasil transformasi menjadi format CSV di `taufiq_nyt_pipeline/data/mart_data/`.
 
-# 4. Data Quality Check (`Quality_check.py`)
+# 4. Data Quality Check (`Validasi_Data_Quality.py`)
 
 Memvalidasi data. Baris bermasalah tidak dihapus, tapi dikarantina ke file
 terpisah dengan kolom `error_type`:

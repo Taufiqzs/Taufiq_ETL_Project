@@ -3,6 +3,7 @@ data/raw_data_pl/*
 data/transformed_data/*
 data/mart_data/*
 data/mart_clean/*
+.venv/
 
 #untuk struktur folder tanpa data
 !data/raw_data_pl/.gitkeep
